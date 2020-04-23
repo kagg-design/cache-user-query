@@ -1,0 +1,15 @@
+.DS_Store
+Thumbs.db
+wp-cli.local.yml
+node_modules/
+dist/**
+build/**
+tests/**/*.cache
+vendor/
+*.sql
+*.tar.gz
+*.zip
+*.lock
+*.opt
+.idea/
+!composer.lock

@@ -1,0 +1,25 @@
+<phpunit
+		bootstrap="./bootstrap.php"
+		backupGlobals="false"
+		colors="true"
+		convertErrorsToExceptions="true"
+		convertNoticesToExceptions="true"
+		convertWarningsToExceptions="true"
+		beStrictAboutTestsThatDoNotTestAnything="false"
+>
+	<testsuites>
+		<testsuite name="cache-user-query-tests">
+			<directory suffix=".php">./tests/</directory>
+		</testsuite>
+	</testsuites>
+	<filter>
+		<whitelist>
+			<directory suffix=".php">../../</directory>
+			<exclude>
+				<directory>../../.make</directory>
+				<directory>../../tests</directory>
+				<directory>../../vendor</directory>
+			</exclude>
+		</whitelist>
+	</filter>
+</phpunit>
