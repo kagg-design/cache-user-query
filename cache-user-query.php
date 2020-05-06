@@ -21,3 +21,9 @@ require_once KAGG_CACHE_USER_QUERY . '/vendor/autoload.php';
 
 $cache_user_query_plugin = new Cache_User_Query();
 $cache_user_query_plugin->add_hooks();
+
+define( 'KAGG_CACHE_USER_QUERY_GENERATE_USERS', false );
+
+if ( KAGG_CACHE_USER_QUERY_GENERATE_USERS ) {
+	( new Generate_Users() )->generate( 250 * 1000 );
+}
