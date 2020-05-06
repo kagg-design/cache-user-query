@@ -1,4 +1,9 @@
 <?php
+/**
+ * Cache_User_Query class file.
+ *
+ * @package KAGG\CacheUserQuery
+ */
 
 namespace KAGG\CacheUserQuery;
 
@@ -6,7 +11,12 @@ use KAGG\Cache\Cache;
 use WP_User_Query;
 use wpdb;
 
-class CacheUserQuery {
+/**
+ * Class Cache_User_Query
+ *
+ * @package KAGG\CacheUserQuery
+ */
+class Cache_User_Query {
 
 	/**
 	 * Cache object.
@@ -15,23 +25,32 @@ class CacheUserQuery {
 	 */
 	protected $cache;
 
+	/**
+	 * Cache_User_Query constructor.
+	 */
 	public function __construct() {
 		$this->cache = new Cache( __CLASS__ );
 	}
 
+	/**
+	 * Add hooks.
+	 */
 	public function add_hooks() {
-		add_action( 'clean_user_cache', [ $this, 'cleanUserCacheAction' ] );
-		add_action( 'updated_user_meta', [ $this, 'updatedUserMetaAction' ] );
-		add_filter( 'users_pre_query', [ $this, 'usersPreQuery' ], 10, 2 );
+		add_action( 'clean_user_cache', [ $this, 'clean_user_cache_action' ] );
+		add_action( 'updated_user_meta', [ $this, 'updated_user_meta_action' ] );
+		add_filter( 'users_pre_query', [ $this, 'users_pre_query' ], 10, 2 );
 	}
 
 	/**
-	 * @param null          $results
-	 * @param WP_User_Query $user_query
+	 * Filter users_pre_query.
+	 *
+	 * @param null          $results    Return an array of user data to short-circuit WP's user query
+	 *                                  or null to allow WP to run its normal queries.
+	 * @param WP_User_Query $user_query The WP_User_Query instance (passed by reference).
 	 *
 	 * @return array
 	 */
-	public function usersPreQuery( $results, $user_query ) {
+	public function users_pre_query( $results, $user_query ) {
 		global $wpdb;
 
 		$qv      =& $user_query->query_vars;
@@ -93,15 +112,24 @@ class CacheUserQuery {
 		return $results;
 	}
 
-	public function cleanUserCacheAction() {
-		$this->flushCache();
+	/**
+	 * Do action clean_user_cache.
+	 */
+	public function clean_user_cache_action() {
+		$this->flush_cache();
 	}
 
-	public function updatedUserMetaAction() {
-		$this->flushCache();
+	/**
+	 * Do action updated_user_meta.
+	 */
+	public function updated_user_meta_action() {
+		$this->flush_cache();
 	}
 
-	private function flushCache() {
+	/**
+	 * Flush own cache.
+	 */
+	private function flush_cache() {
 		$this->cache->flush_group_cache();
 	}
 }
