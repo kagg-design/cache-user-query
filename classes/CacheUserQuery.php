@@ -1,16 +1,28 @@
 <?php
 
-namespace WPML\CacheUserQuery;
+namespace KAGG\CacheUserQuery;
 
+use KAGG\Cache\Cache;
 use WP_User_Query;
 use wpdb;
 
 class CacheUserQuery {
 
+	/**
+	 * Cache object.
+	 *
+	 * @var Cache
+	 */
+	protected $cache;
+
+	public function __construct() {
+		$this->cache = new Cache( __CLASS__ );
+	}
+
 	public function add_hooks() {
 		add_action( 'clean_user_cache', [ $this, 'cleanUserCacheAction' ] );
 		add_action( 'updated_user_meta', [ $this, 'updatedUserMetaAction' ] );
-		add_filter( 'users_pre_query', [ $this, 'cacheUserQuery' ], 10, 2 );
+		add_filter( 'users_pre_query', [ $this, 'usersPreQuery' ], 10, 2 );
 	}
 
 	/**
@@ -19,16 +31,15 @@ class CacheUserQuery {
 	 *
 	 * @return array
 	 */
-	public function cacheUserQuery( $results, $user_query ) {
+	public function usersPreQuery( $results, $user_query ) {
 		global $wpdb;
 
 		$qv      =& $user_query->query_vars;
 		$request = "SELECT $user_query->query_fields $user_query->query_from $user_query->query_where $user_query->query_orderby $user_query->query_limit";
 
-		$cache_key = $request;
-		$cache     = wpml_get_cache( __CLASS__ );
+		$cache_key = md5( $request );
 		$found     = false;
-		$data      = $cache->get( $cache_key, $found );
+		$data      = $this->cache->get( $cache_key, $found );
 		if ( $found ) {
 			$user_query->__set( 'total_users', $data['total_users'] );
 
@@ -77,7 +88,7 @@ class CacheUserQuery {
 			'total_users' => $user_query->get_total(),
 		];
 
-		$cache->set( $cache_key, $data, __CLASS__ );
+		$this->cache->set( $cache_key, $data, __CLASS__ );
 
 		return $results;
 	}
@@ -91,6 +102,6 @@ class CacheUserQuery {
 	}
 
 	private function flushCache() {
-		wpml_get_cache( __CLASS__ )->flush_group_cache();
+		$this->cache->flush_group_cache();
 	}
 }
