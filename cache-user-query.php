@@ -27,3 +27,9 @@ define( 'KAGG_CACHE_USER_QUERY_GENERATE_USERS', false );
 if ( KAGG_CACHE_USER_QUERY_GENERATE_USERS ) {
 	( new Generate_Users() )->generate( 250 * 1000 );
 }
+
+define( 'KAGG_CACHE_USER_QUERY_DELETE_USERS', false );
+
+if ( KAGG_CACHE_USER_QUERY_DELETE_USERS ) {
+	( new Generate_Users() )->delete();
+}

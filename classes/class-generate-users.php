@@ -60,7 +60,7 @@ class Generate_Users {
 
 		$sql = rtrim( $sql, ',' );
 
-		$result = $wpdb->query( $sql );
+		$wpdb->query( $sql );
 
 		// Generate metas.
 		$sql = "INSERT INTO {$wpdb->usermeta} (
@@ -100,6 +100,40 @@ class Generate_Users {
 
 		$sql = rtrim( $sql, ',' );
 
-		$result = $wpdb->query( $sql );
+		$wpdb->query( $sql );
+	}
+
+	/**
+	 * Delete users.
+	 */
+	public function delete() {
+		global $wpdb;
+
+		$result = $wpdb->query(
+			"SELECT ID FROM {$wpdb->users} WHERE user_login LIKE 'test_user_%'"
+		);
+
+		if ( ! $result ) {
+			return;
+		}
+
+		$ids = $wpdb->last_result;
+
+		$ids = array_map(
+			function( $id ) {
+				return $id->ID;
+			},
+			$ids
+		);
+
+		$in = '(' . implode( ',', $ids ) . ')';
+
+		$wpdb->query(
+			"DELETE FROM {$wpdb->users} WHERE ID IN $in"
+		);
+
+		$wpdb->query(
+			"DELETE FROM {$wpdb->usermeta} WHERE user_id IN $in"
+		);
 	}
 }
