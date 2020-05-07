@@ -1,6 +1,8 @@
 <?php
 /**
  * Generate_Users class file.
+ *
+ * @package KAGG\CacheUserQuery
  */
 
 namespace KAGG\CacheUserQuery;
@@ -13,6 +15,13 @@ use const Patchwork\CodeManipulation\Actions\RedefinitionOfNew\publicizeConstruc
  * @package KAGG\CacheUserQuery
  */
 class Generate_Users {
+
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching
+	// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
+	// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+	// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 
 	/**
 	 * Generate users.
