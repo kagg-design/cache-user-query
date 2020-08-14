@@ -2,10 +2,10 @@
 /**
  * CacheUserQueryTestCase class file.
  *
- * @package WPML\CacheUserQuery
+ * @package kagg\cache-user-query
  */
 
-namespace WPML\CacheUserQuery;
+namespace KAGG\CacheUserQuery;
 
 use Mockery;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +16,7 @@ use tad\FunctionMocker\FunctionMocker;
 /**
  * Class CacheUserQueryTestCase
  */
-abstract class CacheUserQueryTestCase extends TestCase {
+abstract class Cache_User_Query_TestCase extends TestCase {
 
 	/**
 	 * Setup test

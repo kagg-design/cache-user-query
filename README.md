@@ -16,7 +16,7 @@ Just install it as described below.
 
 In `wp-content/mu-plugins` folder:
 ```
-git clone https://github.com/OnTheGoSystems/cache-user-query
+git clone https://github.com/kagg-design/cache-user-query.git
 cd cache-user-query
 composer install --no-dev
 cp cache-user-query.php ..
@@ -26,7 +26,7 @@ cp cache-user-query.php ..
 
 In `wp-content/mu-plugins` folder:
 ```
-git clone https://github.com/OnTheGoSystems/cache-user-query
+git clone https://github.com/kagg-design/cache-user-query.git
 cd cache-user-query
 composer install
 cp cache-user-query.php ..

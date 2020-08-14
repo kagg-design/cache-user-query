@@ -2,7 +2,7 @@
 /**
  * Bootstrap file for Cache User Query phpunit tests.
  *
- * @package WPML\CacheUserQuery
+ * @package kagg\cache-user-query
  */
 
 use tad\FunctionMocker\FunctionMocker;

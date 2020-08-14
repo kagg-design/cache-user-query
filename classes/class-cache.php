@@ -97,7 +97,7 @@ class Cache {
 	 * Retrieves the cache contents from the WordPress cache.
 	 *
 	 * @param int|string $key    The key under which the cache contents are stored.
-	 * @param bool       $found  Optional. Whether the key was found in the cache (passed by reference).
+	 * @param bool|null  $found  Optional. Whether the key was found in the cache (passed by reference).
 	 *                           Disambiguates a return of false, a storable value. Default null.
 	 *
 	 * @return bool|mixed False on failure to retrieve contents or the cache

@@ -1,5 +1,5 @@
 {
-  "name": "WPML/CacheUserQuery",
+  "name": "kagg/cache-user-query",
   "description": "MU-Plugin to cache user query. Useful on sites with big number of users",
   "license": "GPL-2.0-only",
   "keywords": [
@@ -7,13 +7,19 @@
     "user query",
     "WP_User_Query"
   ],
-  "homepage": "https://github.com/OnTheGoSystems/cache-user-query",
+  "homepage": "https://github.com/kagg-design/cache-user-query",
   "type": "wordpress-plugin",
   "authors": [
     {
       "name": "Igor Gergel",
-      "email": "igor.g@onthegosystems.com",
-      "homepage": "https://www.onthegosystems.com/"
+      "email": "info@kagg.eu",
+      "homepage": "https://kagg.eu/en/"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/OnTheGoSystems/patchwork.git"
     }
   ],
   "minimum-stability": "dev",

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Cache User Query
  * Description: MU-Plugin to cache user query. Useful on sites with big number of users.
- * Version: 1.0
+ * Version: 1.1
  * Author: KAGG Design
  * Author URI: https://kagg.eu/en
  * License: GPL2
@@ -10,7 +10,7 @@
  * Tested up to: 5.4
  * Requires PHP: 5.6
  *
- * @package KAGG\CacheUserQuery
+ * @package kagg\cache-user-query
  */
 
 namespace KAGG\CacheUserQuery;

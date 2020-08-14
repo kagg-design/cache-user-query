@@ -2,7 +2,7 @@
 /**
  * Cache_User_Query class file.
  *
- * @package KAGG\CacheUserQuery
+ * @package kagg\cache-user-query
  */
 
 namespace KAGG\CacheUserQuery;
@@ -14,7 +14,7 @@ use wpdb;
 /**
  * Class Cache_User_Query
  *
- * @package KAGG\CacheUserQuery
+ * @package kagg\cache-user-query
  */
 class Cache_User_Query {
 

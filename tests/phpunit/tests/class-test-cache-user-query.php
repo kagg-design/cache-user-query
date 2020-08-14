@@ -1,13 +1,14 @@
 <?php
 
-namespace WPML\CacheUserQuery;
+namespace KAGG\CacheUserQuery;
 
 use tad\FunctionMocker\FunctionMocker;
+use KAGG\Cache\Cache;
 
 /**
- * Class TestCacheUserQuery
+ * Class TestCache_User_Query
  */
-class TestCacheUserQuery extends CacheUserQueryTestCase {
+class Test_Cache_User_Query extends Cache_User_Query_TestCase {
 
 	public function tearDown() {
 		unset( $GLOBALS['wpdb'] );
@@ -18,34 +19,12 @@ class TestCacheUserQuery extends CacheUserQueryTestCase {
 	/**
 	 * @test
 	 */
-	public function it_inits() {
-		$subject = new CacheUserQuery();
-
-		\WP_Mock::expectActionAdded( 'init', [ $subject, 'add_hooks' ] );
-
-		$subject->init();
-	}
-
-	/**
-	 * @test
-	 */
 	public function itAddsHooks() {
-		$subject = new CacheUserQuery();
+		$subject = \Mockery::mock( Cache_User_Query::class )->makePartial();
 
-		FunctionMocker::replace(
-			'class_exists',
-			function ( $name ) {
-				if ( 'SitePress' === $name ) {
-					return true;
-				}
-
-				return null;
-			}
-		);
-
-		\WP_Mock::expectActionAdded( 'clean_user_cache', [ $subject, 'cleanUserCacheAction' ] );
-		\WP_Mock::expectActionAdded( 'updated_user_meta', [ $subject, 'updatedUserMetaAction' ] );
-		\WP_Mock::expectFilterAdded( 'users_pre_query', [ $subject, 'usersPreQuery' ], 10, 2 );
+		\WP_Mock::expectActionAdded( 'clean_user_cache', [ $subject, 'clean_user_cache_action' ] );
+		\WP_Mock::expectActionAdded( 'updated_user_meta', [ $subject, 'updated_user_meta_action' ] );
+		\WP_Mock::expectFilterAdded( 'users_pre_query', [ $subject, 'users_pre_query' ], 10, 2 );
 
 		$subject->add_hooks();
 	}
@@ -53,23 +32,10 @@ class TestCacheUserQuery extends CacheUserQueryTestCase {
 	/**
 	 * @test
 	 */
-	public function itDoesNotAddHooksWhenNoSitePress() {
-		$subject = new CacheUserQuery();
-
-		\WP_Mock::expectActionNotAdded( 'clean_user_cache', [ $subject, 'cleanUserCacheAction' ] );
-		\WP_Mock::expectActionNotAdded( 'updated_user_meta', [ $subject, 'updatedUserMetaAction' ] );
-		\WP_Mock::expectFilterNotAdded( 'users_pre_query', [ $subject, 'usersPreQuery' ], 10, 2 );
-
-		$subject->add_hooks();
-	}
-
-	/**
-	 * @test
-	 */
-	public function itFiltersUsersPreQuery() {
+	public function itFilters_users_pre_query() {
 		global $wpdb;
 
-		$subject = new CacheUserQuery();
+		$subject = \Mockery::mock( Cache_User_Query::class )->makePartial();
 
 		$total   = 3;
 		$qv      = [
@@ -121,9 +87,11 @@ class TestCacheUserQuery extends CacheUserQueryTestCase {
 
 		$request = "SELECT $user_query->query_fields $user_query->query_from $user_query->query_where $user_query->query_orderby $user_query->query_limit";
 
-		$cache = \Mockery::mock( 'WPML_WP_Cache' );
+		$cache = \Mockery::mock( Cache::class );
 		$cache->shouldReceive( 'get' )->with( md5( $request ), false )->once();
-		$cache->shouldReceive( 'set' )->with( md5( $request ), $data, 'WPML\CacheUserQuery\CacheUserQuery' )->once();
+		$cache->shouldReceive( 'set' )->with( md5( $request ), $data, Cache_User_Query::class )->once();
+
+		$this->set_protected_property( $subject, 'cache', $cache );
 
 		$wpdb = \Mockery::mock( 'wpdb' );
 		$wpdb->shouldReceive( 'get_results' )->with( $request )->andReturn( $results );
@@ -131,36 +99,32 @@ class TestCacheUserQuery extends CacheUserQueryTestCase {
 
 		\WP_Mock::onFilter( 'found_users_query' )->with( 'SELECT FOUND_ROWS()', $user_query )->reply( $user_query );
 
-		\WP_Mock::userFunction( 'wpml_get_cache' )->with( CacheUserQuery::class )->once()->andReturn( $cache );
-
-		$subject->usersPreQuery( null, $user_query );
+		$subject->users_pre_query( null, $user_query );
 	}
 
 	/**
 	 * @test
 	 */
-	public function itRunsCleanUserCacheAction() {
-		$cache = \Mockery::mock( 'WPML_WP_Cache' );
+	public function itRuns_clean_user_cache_action() {
+		$cache = \Mockery::mock( Cache::class );
 		$cache->shouldReceive( 'flush_group_cache' )->once();
 
-		\WP_Mock::userFunction( 'wpml_get_cache' )->with( CacheUserQuery::class )->once()->andReturn( $cache );
+		$subject = \Mockery::mock( Cache_User_Query::class )->makePartial();
+		$this->set_protected_property( $subject, 'cache', $cache );
 
-		$subject = new CacheUserQuery();
-
-		$subject->cleanUserCacheAction();
+		$subject->clean_user_cache_action();
 	}
 
 	/**
 	 * @test
 	 */
-	public function itUpdatesdUserMetaAction() {
-		$cache = \Mockery::mock( 'WPML_WP_Cache' );
+	public function itUpdates_user_meta_action() {
+		$cache = \Mockery::mock( Cache::class );
 		$cache->shouldReceive( 'flush_group_cache' )->once();
 
-		\WP_Mock::userFunction( 'wpml_get_cache' )->with( CacheUserQuery::class )->once()->andReturn( $cache );
+		$subject = \Mockery::mock( Cache_User_Query::class )->makePartial();
+		$this->set_protected_property( $subject, 'cache', $cache );
 
-		$subject = new CacheUserQuery();
-
-		$subject->updatedUserMetaAction();
+		$subject->updated_user_meta_action();
 	}
 }

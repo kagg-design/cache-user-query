@@ -2,7 +2,7 @@
 /**
  * Generate_Users class file.
  *
- * @package KAGG\CacheUserQuery
+ * @package kagg\cache-user-query
  */
 
 namespace KAGG\CacheUserQuery;
@@ -12,7 +12,7 @@ use const Patchwork\CodeManipulation\Actions\RedefinitionOfNew\publicizeConstruc
 /**
  * Class Generate_Users
  *
- * @package KAGG\CacheUserQuery
+ * @package kagg\cache-user-query
  */
 class Generate_Users {
 
