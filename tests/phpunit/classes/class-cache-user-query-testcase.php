@@ -9,9 +9,11 @@ namespace KAGG\CacheUserQuery;
 
 use Mockery;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 use tad\FunctionMocker\FunctionMocker;
+use WP_Mock;
 
 /**
  * Class CacheUserQueryTestCase
@@ -21,17 +23,17 @@ abstract class Cache_User_Query_TestCase extends TestCase {
 	/**
 	 * Setup test
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		FunctionMocker::setUp();
 		parent::setUp();
-		\WP_Mock::setUp();
+		WP_Mock::setUp();
 	}
 
 	/**
 	 * End test
 	 */
-	public function tearDown() {
-		\WP_Mock::tearDown();
+	public function tearDown(): void {
+		WP_Mock::tearDown();
 		Mockery::close();
 		parent::tearDown();
 		FunctionMocker::tearDown();
@@ -40,19 +42,19 @@ abstract class Cache_User_Query_TestCase extends TestCase {
 	/**
 	 * Get an object protected property.
 	 *
-	 * @param object $object        Object.
+	 * @param object $obj           Object.
 	 * @param string $property_name Property name.
 	 *
 	 * @return mixed
 	 *
 	 * @throws ReflectionException Reflection exception.
 	 */
-	protected function get_protected_property( $object, $property_name ) {
-		$reflection_class = new \ReflectionClass( $object );
+	protected function get_protected_property( object $obj, string $property_name ) {
+		$reflection_class = new ReflectionClass( $obj );
 
 		$property = $reflection_class->getProperty( $property_name );
 		$property->setAccessible( true );
-		$value = $property->getValue( $object );
+		$value = $property->getValue( $obj );
 		$property->setAccessible( false );
 
 		return $value;
@@ -61,25 +63,25 @@ abstract class Cache_User_Query_TestCase extends TestCase {
 	/**
 	 * Set an object protected property.
 	 *
-	 * @param object $object        Object.
+	 * @param object $obj           Object.
 	 * @param string $property_name Property name.
 	 * @param mixed  $value         Property vale.
 	 *
 	 * @throws ReflectionException Reflection exception.
 	 */
-	protected function set_protected_property( $object, $property_name, $value ) {
-		$reflection_class = new \ReflectionClass( $object );
+	protected function set_protected_property( object $obj, string $property_name, $value ): void {
+		$reflection_class = new ReflectionClass( $obj );
 
 		$property = $reflection_class->getProperty( $property_name );
 		$property->setAccessible( true );
-		$property->setValue( $object, $value );
+		$property->setValue( $obj, $value );
 		$property->setAccessible( false );
 	}
 
 	/**
 	 * Set an object protected method accessibility.
 	 *
-	 * @param object $object      Object.
+	 * @param object $obj         Object.
 	 * @param string $method_name Property name.
 	 * @param bool   $accessible  Property vale.
 	 *
@@ -87,13 +89,12 @@ abstract class Cache_User_Query_TestCase extends TestCase {
 	 *
 	 * @throws ReflectionException Reflection exception.
 	 */
-	protected function set_method_accessibility( $object, $method_name, $accessible = true ) {
-		$reflection_class = new \ReflectionClass( $object );
+	protected function set_method_accessibility( object $obj, string $method_name, bool $accessible = true ): ReflectionMethod {
+		$reflection_class = new ReflectionClass( $obj );
 
 		$method = $reflection_class->getMethod( $method_name );
 		$method->setAccessible( $accessible );
 
 		return $method;
 	}
-
 }

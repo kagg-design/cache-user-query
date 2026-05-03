@@ -1,41 +1,58 @@
 <?php
+/**
+ * Test_Cache_User_Query class file
+ *
+ * @package kagg\cache-user-query
+ */
 
 namespace KAGG\CacheUserQuery;
 
-use tad\FunctionMocker\FunctionMocker;
+use Mockery;
+use ReflectionException;
 use KAGG\Cache\Cache;
+use WP_Mock;
 
 /**
  * Class TestCache_User_Query
  */
 class Test_Cache_User_Query extends Cache_User_Query_TestCase {
 
-	public function tearDown() {
+	/**
+	 * Tear down test.
+	 *
+	 * @return void
+	 */
+	public function tearDown(): void {
 		unset( $GLOBALS['wpdb'] );
 
 		parent::tearDown();
 	}
 
 	/**
+	 * Test add_hooks.
+	 *
 	 * @test
 	 */
-	public function itAddsHooks() {
-		$subject = \Mockery::mock( Cache_User_Query::class )->makePartial();
+	public function itAddsHooks(): void {
+		$subject = Mockery::mock( Cache_User_Query::class )->makePartial();
 
-		\WP_Mock::expectActionAdded( 'clean_user_cache', [ $subject, 'clean_user_cache_action' ] );
-		\WP_Mock::expectActionAdded( 'updated_user_meta', [ $subject, 'updated_user_meta_action' ] );
-		\WP_Mock::expectFilterAdded( 'users_pre_query', [ $subject, 'users_pre_query' ], 10, 2 );
+		WP_Mock::expectActionAdded( 'clean_user_cache', [ $subject, 'clean_user_cache_action' ] );
+		WP_Mock::expectActionAdded( 'updated_user_meta', [ $subject, 'updated_user_meta_action' ] );
+		WP_Mock::expectFilterAdded( 'users_pre_query', [ $subject, 'users_pre_query' ], 10, 2 );
 
 		$subject->add_hooks();
 	}
 
 	/**
+	 * Test users_pre_query.
+	 *
 	 * @test
+	 * @throws ReflectionException ReflectionException.
 	 */
-	public function itFilters_users_pre_query() {
+	public function itFilters_users_pre_query(): void {
 		global $wpdb;
 
-		$subject = \Mockery::mock( Cache_User_Query::class )->makePartial();
+		$subject = Mockery::mock( Cache_User_Query::class )->makePartial();
 
 		$total   = 3;
 		$qv      = [
@@ -72,7 +89,7 @@ class Test_Cache_User_Query extends Cache_User_Query_TestCase {
 			'total_users' => $total,
 		];
 
-		$user_query = \Mockery::mock( 'WP_User_Query' );
+		$user_query = Mockery::mock( 'WP_User_Query' );
 		$user_query->shouldReceive( 'get_total' )->with()->andReturn( $total );
 		$user_query->shouldReceive( '__set' )->with( 'total_users', $total )->andReturn( $total );
 
@@ -87,42 +104,49 @@ class Test_Cache_User_Query extends Cache_User_Query_TestCase {
 
 		$request = "SELECT $user_query->query_fields $user_query->query_from $user_query->query_where $user_query->query_orderby $user_query->query_limit";
 
-		$cache = \Mockery::mock( Cache::class );
+		$cache = Mockery::mock( Cache::class );
 		$cache->shouldReceive( 'get' )->with( md5( $request ), false )->once();
-		$cache->shouldReceive( 'set' )->with( md5( $request ), $data, Cache_User_Query::class )->once();
+		$cache->shouldReceive( 'set' )->with( md5( $request ), $data )->once();
 
 		$this->set_protected_property( $subject, 'cache', $cache );
 
-		$wpdb = \Mockery::mock( 'wpdb' );
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$wpdb = Mockery::mock( 'wpdb' );
 		$wpdb->shouldReceive( 'get_results' )->with( $request )->andReturn( $results );
 		$wpdb->shouldReceive( 'get_var' )->with( $user_query )->andReturn( $total );
 
-		\WP_Mock::onFilter( 'found_users_query' )->with( 'SELECT FOUND_ROWS()', $user_query )->reply( $user_query );
+		WP_Mock::onFilter( 'found_users_query' )->with( 'SELECT FOUND_ROWS()', $user_query )->reply( $user_query );
 
 		$subject->users_pre_query( null, $user_query );
 	}
 
 	/**
+	 * Test clean_user_cache_action.
+	 *
 	 * @test
+	 * @throws ReflectionException ReflectionException.
 	 */
-	public function itRuns_clean_user_cache_action() {
-		$cache = \Mockery::mock( Cache::class );
+	public function itRuns_clean_user_cache_action(): void {
+		$cache = Mockery::mock( Cache::class );
 		$cache->shouldReceive( 'flush_group_cache' )->once();
 
-		$subject = \Mockery::mock( Cache_User_Query::class )->makePartial();
+		$subject = Mockery::mock( Cache_User_Query::class )->makePartial();
 		$this->set_protected_property( $subject, 'cache', $cache );
 
 		$subject->clean_user_cache_action();
 	}
 
 	/**
+	 * Test updated_user_meta_action.
+	 *
 	 * @test
+	 * @throws ReflectionException ReflectionException.
 	 */
-	public function itUpdates_user_meta_action() {
-		$cache = \Mockery::mock( Cache::class );
+	public function itUpdates_user_meta_action(): void {
+		$cache = Mockery::mock( Cache::class );
 		$cache->shouldReceive( 'flush_group_cache' )->once();
 
-		$subject = \Mockery::mock( Cache_User_Query::class )->makePartial();
+		$subject = Mockery::mock( Cache_User_Query::class )->makePartial();
 		$this->set_protected_property( $subject, 'cache', $cache );
 
 		$subject->updated_user_meta_action();
