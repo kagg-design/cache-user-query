@@ -7,8 +7,6 @@
 
 namespace KAGG\CacheUserQuery;
 
-use const Patchwork\CodeManipulation\Actions\RedefinitionOfNew\publicizeConstructors;
-
 /**
  * Class Generate_Users
  *
@@ -28,18 +26,18 @@ class Generate_Users {
 	 *
 	 * @param int $count Count of users to generate. Makes sense to generate more than 200,000.
 	 */
-	public function generate( $count ) {
+	public function generate( int $count ): void {
 		global $wpdb;
 
 		// Check if users were generated, do nothing then.
-		$result = $wpdb->query( "SELECT ID FROM {$wpdb->users} WHERE user_login = 'test_user_1'" );
+		$result = $wpdb->query( "SELECT ID FROM $wpdb->users WHERE user_login = 'test_user_1'" );
 
 		if ( $result ) {
 			return;
 		}
 
 		// Generate users.
-		$sql = "INSERT INTO {$wpdb->users} (
+		$sql = "INSERT INTO $wpdb->users (
 			user_login,
 			user_pass,
 			user_nicename,
@@ -51,7 +49,7 @@ class Generate_Users {
 			display_name
 		) VALUES ";
 
-		for ( $i = 1; $i <= $count; $i ++ ) {
+		for ( $i = 1; $i <= $count; $i++ ) {
 			$user['user_login']          = "'test_user_" . $i . "'";
 			$user['user_pass']           = "'\$P\$BW1XUO91cp9wqzieumKPBuy2zJr1j9.'";
 			$user['user_nicename']       = $user['user_login'];
@@ -72,7 +70,7 @@ class Generate_Users {
 		$wpdb->query( $sql );
 
 		// Generate metas.
-		$sql = "INSERT INTO {$wpdb->usermeta} (
+		$sql = "INSERT INTO $wpdb->usermeta (
 			user_id,
 			meta_key,
 			meta_value
@@ -95,7 +93,7 @@ class Generate_Users {
 			'dismissed_wp_pointers' => "''",
 		];
 
-		for ( $i = 1; $i <= $count; $i ++ ) {
+		for ( $i = 1; $i <= $count; $i++ ) {
 			foreach ( $metas as $key => $value ) {
 				$meta['user_id']    = $i;
 				$meta['meta_key']   = "'" . $key . "'";
@@ -115,11 +113,11 @@ class Generate_Users {
 	/**
 	 * Delete users.
 	 */
-	public function delete() {
+	public function delete(): void {
 		global $wpdb;
 
 		$result = $wpdb->query(
-			"SELECT ID FROM {$wpdb->users} WHERE user_login LIKE 'test_user_%'"
+			"SELECT ID FROM $wpdb->users WHERE user_login LIKE 'test_user_%'"
 		);
 
 		if ( ! $result ) {
@@ -129,7 +127,7 @@ class Generate_Users {
 		$ids = $wpdb->last_result;
 
 		$ids = array_map(
-			function( $id ) {
+			static function ( $id ) {
 				return $id->ID;
 			},
 			$ids
@@ -138,11 +136,11 @@ class Generate_Users {
 		$in = '(' . implode( ',', $ids ) . ')';
 
 		$wpdb->query(
-			"DELETE FROM {$wpdb->users} WHERE ID IN $in"
+			"DELETE FROM $wpdb->users WHERE ID IN $in"
 		);
 
 		$wpdb->query(
-			"DELETE FROM {$wpdb->usermeta} WHERE user_id IN $in"
+			"DELETE FROM $wpdb->usermeta WHERE user_id IN $in"
 		);
 	}
 }

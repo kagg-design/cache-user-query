@@ -13,25 +13,25 @@ namespace KAGG\Cache;
 class Cache {
 
 	/**
-	 * Key name under which array of all group keys is stored.
+	 * Key name under which an array of all group keys is stored.
 	 *
 	 * @var string
 	 */
-	const KEYS = __CLASS__ . '__group_keys';
+	private const KEYS = __CLASS__ . '__group_keys';
 
 	/**
 	 * Group name.
 	 *
 	 * @var string
 	 */
-	protected $group;
+	protected string $group;
 
 	/**
 	 * Cache constructor.
 	 *
 	 * @param string $group Optional. Where the cache contents are grouped. Default empty.
 	 */
-	public function __construct( $group = '' ) {
+	public function __construct( string $group = '' ) {
 		$this->group = $group;
 	}
 
@@ -39,14 +39,16 @@ class Cache {
 	 * Retrieves the cache contents from the cache by key and group.
 	 *
 	 * @param int|string $key    The key under which the cache contents are stored.
-	 * @param bool       $found  Optional. Whether the key was found in the cache (passed by reference).
+	 * @param bool|null  $found  Optional. Whether the key was found in the cache (passed by reference).
 	 *                           Disambiguates a return of false, a storable value. Default null.
 	 *
 	 * @return bool|mixed False on failure to retrieve contents or the cache
 	 *                    contents on success.
+	 * @noinspection PhpMissingParamTypeInspection
 	 */
 	public function get( $key, &$found = null ) {
 		$value = $this->cache_get( $key, $found );
+
 		if ( is_array( $value ) && array_key_exists( 'data', $value ) ) {
 			// We know that we have set something in the cache.
 			$found = true;
@@ -69,10 +71,12 @@ class Cache {
 	 *
 	 * @return bool False on failure, true on success
 	 */
-	public function set( $key, $data, $expire = 0 ) {
+	public function set( $key, $data, int $expire = 0 ): bool {
 		$keys = $this->get_keys();
+
 		if ( ! in_array( $key, $keys, true ) ) {
 			$keys[] = $key;
+
 			$this->cache_set( self::KEYS, $keys );
 		}
 
@@ -83,7 +87,7 @@ class Cache {
 	/**
 	 * Removes the cache contents matching key and group.
 	 */
-	public function flush_group_cache() {
+	public function flush_group_cache(): void {
 		$keys = $this->get_keys();
 
 		foreach ( $keys as $key ) {
@@ -102,6 +106,7 @@ class Cache {
 	 *
 	 * @return bool|mixed False on failure to retrieve contents or the cache
 	 *                    contents on success
+	 * @noinspection PhpMissingParamTypeInspection
 	 */
 	protected function cache_get( $key, &$found = null ) {
 		return wp_cache_get( $key, $this->group, false, $found );
@@ -117,7 +122,7 @@ class Cache {
 	 *
 	 * @return bool False on failure, true on success
 	 */
-	protected function cache_set( $key, $data, $expire = 0 ) {
+	protected function cache_set( $key, $data, int $expire = 0 ): bool {
 		return wp_cache_set( $key, $data, $this->group, $expire );
 	}
 
@@ -128,7 +133,7 @@ class Cache {
 	 *
 	 * @return bool True on successful removal, false on failure.
 	 */
-	protected function cache_delete( $key ) {
+	protected function cache_delete( $key ): bool {
 		return wp_cache_delete( $key, $this->group );
 	}
 
@@ -137,9 +142,10 @@ class Cache {
 	 *
 	 * @return array
 	 */
-	private function get_keys() {
+	private function get_keys(): array {
 		$found = false;
 		$keys  = $this->cache_get( self::KEYS, $found );
+
 		if ( $found && is_array( $keys ) ) {
 			return $keys;
 		}
